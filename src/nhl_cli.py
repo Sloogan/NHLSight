@@ -35,8 +35,9 @@ def open_source(src: str) -> cv2.VideoCapture:
 def draw_calibration(frame, profile=EA_NHL_INGAME_24):
     h, w = frame.shape[:2]
     for field in (
-        "away_team", "away_score", "period", "time",
-        "home_score", "home_team", "away_pp", "home_pp", "pp_time",
+        "away_team", "home_team", "away_score", "home_score",
+        "away_sog", "home_sog", "time", "period",
+        "away_pp", "home_pp", "pp_time",
     ):
         roi = getattr(profile, field)
         x, y, rw, rh = roi.to_pixels(w, h)

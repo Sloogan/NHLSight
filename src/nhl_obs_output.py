@@ -4,7 +4,7 @@ from nhl_scorebug import NHLGameState
 
 _FIELDS = (
     "home_team", "away_team", "home_score", "away_score",
-    "time", "period", "pp_time",
+    "home_sog", "away_sog", "time", "period", "pp_time",
 )
 
 
