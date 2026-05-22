@@ -96,12 +96,16 @@ class NHLDetector:
 
         home_score_s = read_digit_field(crop_roi(mask, p.home_score), self.digits, 2)
         away_score_s = read_digit_field(crop_roi(mask, p.away_score), self.digits, 2)
+        home_sog_s = read_digit_field(crop_roi(mask, p.home_sog), self.digits, 2)
+        away_sog_s = read_digit_field(crop_roi(mask, p.away_sog), self.digits, 2)
 
         return NHLGameState(
             home_team=read_team_field(crop_roi(mask, p.home_team), self.teams),
             away_team=read_team_field(crop_roi(mask, p.away_team), self.teams),
             home_score=int(home_score_s) if home_score_s.isdigit() else 0,
             away_score=int(away_score_s) if away_score_s.isdigit() else 0,
+            home_sog=int(home_sog_s) if home_sog_s.isdigit() else 0,
+            away_sog=int(away_sog_s) if away_sog_s.isdigit() else 0,
             time=read_clock(crop_roi(mask, p.time), self.digits, self.symbols),
             period=read_period(crop_roi(mask, p.period), self.digits, self.symbols),
             home_pp=detect_pp_active(crop_roi(mask, p.home_pp)),

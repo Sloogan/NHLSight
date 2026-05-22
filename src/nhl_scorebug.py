@@ -1,4 +1,4 @@
-from dataclasses import dataclass, asdict, field
+from dataclasses import dataclass, asdict
 from typing import Optional
 
 
@@ -8,6 +8,8 @@ class NHLGameState:
     away_team: Optional[str] = None
     home_score: int = 0
     away_score: int = 0
+    home_sog: int = 0
+    away_sog: int = 0
     time: Optional[str] = None
     period: Optional[str] = None
     home_pp: bool = False
@@ -38,17 +40,20 @@ class ROI:
 class ScorebugProfile:
     """Layout of the EA NHL 25 in-game scorebug pinned to the top-left.
 
-    Two stacked rows: away team (top) and home team (bottom). Coordinates
-    are normalized against frame size so the same profile works for 1080p
-    and 4K captures.
+    Column order left-to-right: NHL logo | team abbr | goals | shots on goal
+    | time/period. Two stacked rows: away team (top) and home team (bottom).
+    Coordinates are normalized against frame size so the same profile works
+    for 1080p and 4K captures.
     """
     name: str
     away_team: ROI
-    away_score: ROI
-    period: ROI
-    time: ROI
-    home_score: ROI
     home_team: ROI
+    away_score: ROI
+    home_score: ROI
+    away_sog: ROI
+    home_sog: ROI
+    time: ROI
+    period: ROI
     home_pp: ROI
     away_pp: ROI
     pp_time: ROI
