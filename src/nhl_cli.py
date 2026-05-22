@@ -3,8 +3,9 @@
 Usage:
     python src/nhl_cli.py --source 0                       # USB capture device 0
     python src/nhl_cli.py --source path/to/clip.mp4
+    python src/nhl_cli.py --source frame.png               # single-shot detect on a still
+    python src/nhl_cli.py --source frame.png --calibrate   # overlay ROI boxes on the still
     python src/nhl_cli.py --source 0 --obs-out ./obs       # also write OBS .txt files
-    python src/nhl_cli.py --source clip.mp4 --calibrate    # overlay ROI boxes on first frame
 """
 import argparse
 import json
@@ -47,25 +48,28 @@ def draw_calibration(frame, profile=EA_NHL_INGAME_24):
     return frame
 
 
-def main() -> int:
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--source", required=True)
-    ap.add_argument("--glyphs", default="glyphs", help="Directory with digits/, teams/, symbols/")
-    ap.add_argument("--obs-out", default=None)
-    ap.add_argument("--calibrate", action="store_true")
-    ap.add_argument("--calibrate-out", default="calibration.png")
-    ap.add_argument("--show-mask", action="store_true")
-    args = ap.parse_args()
+def run_still(args) -> int:
+    frame = cv2.imread(args.source)
+    if frame is None:
+        print(f"failed to read image: {args.source}", file=sys.stderr)
+        return 1
 
-    if args.calibrate and is_still_image(args.source):
-        frame = cv2.imread(args.source)
-        if frame is None:
-            print(f"failed to read image: {args.source}", file=sys.stderr)
-            return 1
-        cv2.imwrite(args.calibrate_out, draw_calibration(frame))
-        print(f"wrote {args.calibrate_out}")
-        return 0
+    if args.calibrate:
+        cv2.imwrite(args.calibrate_out, draw_calibration(frame.copy()))
+        print(f"wrote {args.calibrate_out}", file=sys.stderr)
 
+    detector = NHLDetector(Path(args.glyphs))
+    state = detector.detect(frame)
+    print(json.dumps(state.to_json()))
+    if args.obs_out:
+        write_obs_files(state, Path(args.obs_out))
+    if args.show_mask:
+        cv2.imwrite("mask.png", mask_white_text(frame))
+        print("wrote mask.png", file=sys.stderr)
+    return 0
+
+
+def run_stream(args) -> int:
     cap = open_source(args.source)
     if not cap.isOpened():
         print(f"failed to open source: {args.source}", file=sys.stderr)
@@ -73,11 +77,12 @@ def main() -> int:
 
     if args.calibrate:
         ok, frame = cap.read()
+        cap.release()
         if not ok:
             print("no frame", file=sys.stderr)
             return 1
         cv2.imwrite(args.calibrate_out, draw_calibration(frame))
-        print(f"wrote {args.calibrate_out}")
+        print(f"wrote {args.calibrate_out}", file=sys.stderr)
         return 0
 
     detector = NHLDetector(Path(args.glyphs))
@@ -104,6 +109,21 @@ def main() -> int:
 
     cap.release()
     return 0
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--source", required=True)
+    ap.add_argument("--glyphs", default="glyphs", help="Directory with digits/, teams/, symbols/")
+    ap.add_argument("--obs-out", default=None)
+    ap.add_argument("--calibrate", action="store_true")
+    ap.add_argument("--calibrate-out", default="calibration.png")
+    ap.add_argument("--show-mask", action="store_true")
+    args = ap.parse_args()
+
+    if is_still_image(args.source):
+        return run_still(args)
+    return run_stream(args)
 
 
 if __name__ == "__main__":
