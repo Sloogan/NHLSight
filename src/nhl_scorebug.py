@@ -36,10 +36,11 @@ class ROI:
 
 @dataclass(slots=True, frozen=True)
 class ScorebugProfile:
-    """Layout of the EA NHL 24/25 in-game scorebug, centered at top of frame.
+    """Layout of the EA NHL 25 in-game scorebug pinned to the top-left.
 
-    Starting estimates — must be calibrated against a real 1920x1080 capture
-    by overlaying boxes (see scripts/nhl_calibrate.py).
+    Two stacked rows: away team (top) and home team (bottom). Coordinates
+    are normalized against frame size so the same profile works for 1080p
+    and 4K captures.
     """
     name: str
     away_team: ROI
@@ -53,15 +54,18 @@ class ScorebugProfile:
     pp_time: ROI
 
 
+# Calibrated against a 1920x1080 EA NHL 25 capture (Scotiabank Arena, MTL@TOR).
+# PP fields are not visible in idle play — kept at zero-area until we get a
+# reference frame with an active penalty.
 EA_NHL_INGAME_24 = ScorebugProfile(
-    name="ea_nhl_ingame_24",
-    away_team=ROI(x=0.355, y=0.020, w=0.055, h=0.035),
-    away_score=ROI(x=0.410, y=0.018, w=0.040, h=0.045),
-    period=ROI(x=0.475, y=0.015, w=0.050, h=0.025),
-    time=ROI(x=0.460, y=0.040, w=0.080, h=0.035),
-    home_score=ROI(x=0.550, y=0.018, w=0.040, h=0.045),
-    home_team=ROI(x=0.590, y=0.020, w=0.055, h=0.035),
-    away_pp=ROI(x=0.405, y=0.065, w=0.045, h=0.020),
-    home_pp=ROI(x=0.550, y=0.065, w=0.045, h=0.020),
-    pp_time=ROI(x=0.470, y=0.075, w=0.060, h=0.025),
+    name="ea_nhl_25_top_left",
+    away_team=ROI(x=0.0443, y=0.0185, w=0.0521, h=0.0324),
+    home_team=ROI(x=0.0443, y=0.0556, w=0.0521, h=0.0370),
+    away_score=ROI(x=0.0990, y=0.0167, w=0.0313, h=0.0370),
+    home_score=ROI(x=0.0990, y=0.0556, w=0.0313, h=0.0370),
+    time=ROI(x=0.1719, y=0.0167, w=0.0703, h=0.0370),
+    period=ROI(x=0.1849, y=0.0602, w=0.0417, h=0.0324),
+    away_pp=ROI(x=0.0, y=0.0, w=0.0, h=0.0),
+    home_pp=ROI(x=0.0, y=0.0, w=0.0, h=0.0),
+    pp_time=ROI(x=0.0, y=0.0, w=0.0, h=0.0),
 )

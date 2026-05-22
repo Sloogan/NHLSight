@@ -19,6 +19,13 @@ from nhl_obs_output import write_obs_files
 from nhl_scorebug import EA_NHL_INGAME_24
 
 
+_IMAGE_EXTS = (".png", ".jpg", ".jpeg", ".bmp", ".webp")
+
+
+def is_still_image(src: str) -> bool:
+    return src.lower().endswith(_IMAGE_EXTS)
+
+
 def open_source(src: str) -> cv2.VideoCapture:
     if src.isdigit():
         return cv2.VideoCapture(int(src))
@@ -45,8 +52,18 @@ def main() -> int:
     ap.add_argument("--glyphs", default="glyphs", help="Directory with digits/, teams/, symbols/")
     ap.add_argument("--obs-out", default=None)
     ap.add_argument("--calibrate", action="store_true")
+    ap.add_argument("--calibrate-out", default="calibration.png")
     ap.add_argument("--show-mask", action="store_true")
     args = ap.parse_args()
+
+    if args.calibrate and is_still_image(args.source):
+        frame = cv2.imread(args.source)
+        if frame is None:
+            print(f"failed to read image: {args.source}", file=sys.stderr)
+            return 1
+        cv2.imwrite(args.calibrate_out, draw_calibration(frame))
+        print(f"wrote {args.calibrate_out}")
+        return 0
 
     cap = open_source(args.source)
     if not cap.isOpened():
@@ -58,8 +75,8 @@ def main() -> int:
         if not ok:
             print("no frame", file=sys.stderr)
             return 1
-        cv2.imwrite("calibration.png", draw_calibration(frame))
-        print("wrote calibration.png")
+        cv2.imwrite(args.calibrate_out, draw_calibration(frame))
+        print(f"wrote {args.calibrate_out}")
         return 0
 
     detector = NHLDetector(Path(args.glyphs))
