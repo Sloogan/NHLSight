@@ -59,12 +59,18 @@ class ScorebugProfile:
 # reference frame with an active penalty.
 EA_NHL_INGAME_24 = ScorebugProfile(
     name="ea_nhl_25_top_left",
-    away_team=ROI(x=0.0443, y=0.0185, w=0.0521, h=0.0324),
-    home_team=ROI(x=0.0443, y=0.0556, w=0.0521, h=0.0370),
-    away_score=ROI(x=0.0990, y=0.0167, w=0.0313, h=0.0370),
-    home_score=ROI(x=0.0990, y=0.0556, w=0.0313, h=0.0370),
-    time=ROI(x=0.1719, y=0.0167, w=0.0703, h=0.0370),
-    period=ROI(x=0.1849, y=0.0602, w=0.0417, h=0.0324),
+
+    away_team=ROI(x=0.063, y=0.034, w=0.057, h=0.037),
+    home_team=ROI(x=0.063, y=0.071, w=0.057, h=0.037),
+
+    away_score=ROI(x=0.120, y=0.034, w=0.043, h=0.037),
+    home_score=ROI(x=0.120, y=0.071, w=0.043, h=0.037),
+
+    time=ROI(x=0.189, y=0.049, w=0.053, h=0.025),
+
+    period=ROI(x=0.205, y=0.074, w=0.025, h=0.020),
+
+    # Powerplay (behöver justeras beroende på overlay)
     away_pp=ROI(x=0.0, y=0.0, w=0.0, h=0.0),
     home_pp=ROI(x=0.0, y=0.0, w=0.0, h=0.0),
     pp_time=ROI(x=0.0, y=0.0, w=0.0, h=0.0),

@@ -25,3 +25,7 @@ __MACOSX/
 output/
 .vscode
 .aider*
+
+# Images
+check.png
+reference.png
